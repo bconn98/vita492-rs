@@ -1,5 +1,10 @@
-use crate::{EnumType};
+//! The Packet Type enumeration is utilized for defining the
+//! seven supported VITA 49.2 packet types.
 
+use std::convert::TryFrom;
+
+/// The Packet Type enumeration is utilized for definining the
+/// seven supported VITA 49.2 packet types.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PacketType {
     DataNoSid,
@@ -7,29 +12,25 @@ pub enum PacketType {
     ExtDataNoSid,
     ExtDataSid,
     Context,
+    ExtContext,
+    Control,
+    ExtControl,
 }
 
-impl EnumType for PacketType {
-    type Item = PacketType;
+impl TryFrom<u8> for PacketType {
+    type Error = ();
 
-    fn to_u8(&self) -> u8 {
-        match self {
-            PacketType::DataNoSid => 0,
-            PacketType::DataSid => 1,
-            PacketType::ExtDataNoSid => 2,
-            PacketType::ExtDataSid => 3,
-            PacketType::Context => 4,
-        }
-    }
-
-    fn from_u8(value: u8) -> PacketType {
-        match value {
-            0 => PacketType::DataNoSid,
-            1 => PacketType::DataSid,
-            2 => PacketType::ExtDataNoSid,
-            3 => PacketType::ExtDataSid,
-            4 => PacketType::Context,
-            _ => panic!("Unsupported u8 value for PacketType")
+    fn try_from(v: u8) -> Result<Self, Self::Error> {
+        match v {
+            x if x == PacketType::DataNoSid as u8 => Ok(PacketType::DataNoSid),
+            x if x == PacketType::DataSid as u8 => Ok(PacketType::DataSid),
+            x if x == PacketType::ExtDataNoSid as u8 => Ok(PacketType::ExtDataNoSid),
+            x if x == PacketType::ExtDataSid as u8 => Ok(PacketType::ExtDataSid),
+            x if x == PacketType::Context as u8 => Ok(PacketType::Context),
+            x if x == PacketType::ExtContext as u8 => Ok(PacketType::ExtContext),
+            x if x == PacketType::Control as u8 => Ok(PacketType::Control),
+            x if x == PacketType::ExtControl as u8 => Ok(PacketType::ExtControl),
+            _ => Err(()),
         }
     }
 }
@@ -41,28 +42,25 @@ mod tests {
 
     #[test]
     fn packet_type_to_u8() {
-        let packet_type: PacketType = PacketType::DataNoSid;
-        assert_eq!(packet_type.to_u8(), 0);
-        
-        let packet_type: PacketType = PacketType::DataSid;
-        assert_eq!(packet_type.to_u8(), 1);
-
-        let packet_type: PacketType = PacketType::ExtDataNoSid;
-        assert_eq!(packet_type.to_u8(), 2);
-
-        let packet_type: PacketType = PacketType::ExtDataSid;
-        assert_eq!(packet_type.to_u8(), 3);
-
-        let packet_type: PacketType = PacketType::Context;
-        assert_eq!(packet_type.to_u8(), 4);
+        assert_eq!(PacketType::DataNoSid as u8, 0);
+        assert_eq!(PacketType::DataSid as u8, 1);
+        assert_eq!(PacketType::ExtDataNoSid as u8, 2);
+        assert_eq!(PacketType::ExtDataSid as u8, 3);
+        assert_eq!(PacketType::Context as u8, 4);
+        assert_eq!(PacketType::ExtContext as u8, 5);
+        assert_eq!(PacketType::Control as u8, 6);
+        assert_eq!(PacketType::ExtControl as u8, 7);
     }
 
     #[test]
     fn packet_type_from_u8() {
-        assert_eq!(PacketType::from_u8(0), PacketType::DataNoSid);
-        assert_eq!(PacketType::from_u8(1), PacketType::DataSid);
-        assert_eq!(PacketType::from_u8(2), PacketType::ExtDataNoSid);
-        assert_eq!(PacketType::from_u8(3), PacketType::ExtDataSid);
-        assert_eq!(PacketType::from_u8(4), PacketType::Context);
+        assert_eq!(0.try_into(), Ok(PacketType::DataNoSid));
+        assert_eq!(1.try_into(), Ok(PacketType::DataSid));
+        assert_eq!(2.try_into(), Ok(PacketType::ExtDataNoSid));
+        assert_eq!(3.try_into(), Ok(PacketType::ExtDataSid));
+        assert_eq!(4.try_into(), Ok(PacketType::Context));
+        assert_eq!(5.try_into(), Ok(PacketType::ExtContext));
+        assert_eq!(6.try_into(), Ok(PacketType::Control));
+        assert_eq!(7.try_into(), Ok(PacketType::ExtControl));
     }
 }

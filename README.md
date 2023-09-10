@@ -1,4 +1,6 @@
-# VITA-RS
+# VITA492-RS
+
+![logo.png](logo.png)
 
 Rust implementation of the VITA 49.2 Specification.
 

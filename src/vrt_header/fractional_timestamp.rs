@@ -1,32 +1,28 @@
-use crate::{EnumType};
+//! The fractional timestamp enumeration is utilized for defining the
+//! four supported VITA 49.2 fractional timestamp types.
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+use std::convert::TryFrom;
+
+/// The fractional timestamp enumeration is utilized for definining the
+/// four supported VITA 49.2 fractional timestamp types.
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum FractionalTimestamps {
-    Zero,
-    One,
-    Two,
-    Three,
+    SampleCount,
+    RealTimePico,
+    FreeRunning,
+    Other,
 }
 
-impl EnumType for FractionalTimestamps {
-    type Item = FractionalTimestamps;
+impl TryFrom<u8> for FractionalTimestamps {
+    type Error = ();
 
-    fn to_u8(&self) -> u8 {
-        match self {
-            FractionalTimestamps::Zero => 0,
-            FractionalTimestamps::One => 1,
-            FractionalTimestamps::Two => 2,
-            FractionalTimestamps::Three => 3,
-        }
-    }
-
-    fn from_u8(value: u8) -> FractionalTimestamps {
-        match value {
-            0 => FractionalTimestamps::Zero,
-            1 => FractionalTimestamps::One,
-            2 => FractionalTimestamps::Two,
-            3 => FractionalTimestamps::Three,
-            _ => panic!("Unsupported u8 value for FractionalTimestamps")
+    fn try_from(v: u8) -> Result<Self, Self::Error> {
+        match v {
+            x if x == FractionalTimestamps::SampleCount as u8 => Ok(FractionalTimestamps::SampleCount),
+            x if x == FractionalTimestamps::RealTimePico as u8 => Ok(FractionalTimestamps::RealTimePico),
+            x if x == FractionalTimestamps::FreeRunning as u8 => Ok(FractionalTimestamps::FreeRunning),
+            x if x == FractionalTimestamps::Other as u8 => Ok(FractionalTimestamps::Other),
+            _ => Err(()),
         }
     }
 }
@@ -34,27 +30,20 @@ impl EnumType for FractionalTimestamps {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn tsf_to_u8() {
-        let tsf: FractionalTimestamps = FractionalTimestamps::Zero;
-        assert_eq!(tsf.to_u8(), 0);
-
-        let tsf: FractionalTimestamps = FractionalTimestamps::One;
-        assert_eq!(tsf.to_u8(), 1);
-
-        let tsf: FractionalTimestamps = FractionalTimestamps::Two;
-        assert_eq!(tsf.to_u8(), 2);
-
-        let tsf: FractionalTimestamps = FractionalTimestamps::Three;
-        assert_eq!(tsf.to_u8(), 3);
+        assert_eq!(FractionalTimestamps::SampleCount as u8, 0);
+        assert_eq!(FractionalTimestamps::RealTimePico as u8, 1);
+        assert_eq!(FractionalTimestamps::FreeRunning as u8, 2);
+        assert_eq!(FractionalTimestamps::Other as u8, 3);
     }
 
     #[test]
     fn tsf_from_u8() {
-        assert_eq!(FractionalTimestamps::from_u8(0), FractionalTimestamps::Zero);
-        assert_eq!(FractionalTimestamps::from_u8(1), FractionalTimestamps::One);
-        assert_eq!(FractionalTimestamps::from_u8(2), FractionalTimestamps::Two);
-        assert_eq!(FractionalTimestamps::from_u8(3), FractionalTimestamps::Three);
+        assert_eq!(0.try_into(), Ok(FractionalTimestamps::SampleCount));
+        assert_eq!(1.try_into(), Ok(FractionalTimestamps::RealTimePico));
+        assert_eq!(2.try_into(), Ok(FractionalTimestamps::FreeRunning));
+        assert_eq!(3.try_into(), Ok(FractionalTimestamps::Other));
     }
 }
