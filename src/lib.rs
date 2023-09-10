@@ -1,5 +1,5 @@
 pub mod vrt_header;
-pub mod prolog;
+// pub mod prolog;
 
 /// The Object trait consists of 4 methods that all VITA 49.2 objects
 /// are expected to contain: default construction, serialization/deserialization,
